@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\mahasiswa;
-use Session;
+use AppSession;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rules\Unique;
 use Symfony\Contracts\Service\Attribute\Required;
 
@@ -15,9 +16,18 @@ class mahasiswaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = mahasiswa::orderBy('nim', 'desc')->paginate();
+        $katakunci = $request->katakunci;
+        $jumlahbaris = 4;
+        if (strlen($katakunci)) {
+            $data = mahasiswa::where('nim', 'like', "%$katakunci%")
+            ->orWhere('nama', 'like', "%$katakunci%")
+            ->orWhere('jurusan', 'like', "%$katakunci%")
+            ->paginate($jumlahbaris);
+        } else {
+            $data = mahasiswa::orderBy('nim', 'desc')->paginate($jumlahbaris);
+        }
         return view('mahasiswa.index')->with('data', $data);
     }
 
@@ -53,7 +63,7 @@ class mahasiswaController extends Controller
                 'nim.required' => 'NIM wajib diisi',
                 'nim.numeric' => 'NIM wajib dalam angka',
                 'nim.unique' => 'NIM yang diisikan sudah ada dalam database',
-                'name.required' => 'Nama waji diisi',
+                'name.required' => 'Nama wajib diisi',
                 'jurusan.required' => 'Jurusan wajib diisi',
 
             ]
@@ -87,7 +97,8 @@ class mahasiswaController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data = mahasiswa::where('nim', $id)->first();
+        return view('mahasiswa.edit')->with('data', $data);
     }
 
     /**
@@ -99,7 +110,24 @@ class mahasiswaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate(
+            [
+                'nama' => 'required',
+                'jurusan' => 'required',
+            ],
+            [
+                'name.required' => 'Nama wajib diisi',
+                'jurusan.required' => 'Jurusan wajib diisi',
+
+            ]
+            );
+
+        $data = [
+            'nama' => $request->nama,
+            'jurusan' => $request->jurusan,
+        ];
+        mahasiswa::where('nim', $id)->update($data);
+        return redirect()->to('mahasiswa')->with('success', 'Berhasil Update Data');
     }
 
     /**
@@ -110,6 +138,7 @@ class mahasiswaController extends Controller
      */
     public function destroy($id)
     {
-        //
+        mahasiswa::where('nim', $id)->delete();
+        return redirect()->to('mahasiswa')->with('success', 'Berhasi Delete Data');
     }
 }
