@@ -44,6 +44,6 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
-        file: ./examples/Dockerfile
+        file: ./app/Dockerfile
         push: true
         tags: andinabil/crud-laravel:latest
