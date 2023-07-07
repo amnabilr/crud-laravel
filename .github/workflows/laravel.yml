@@ -39,9 +39,14 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: Build and push
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+        
+    - name: Build Docker Image - VAR
       uses: docker/build-push-action@v4
       with:
         file: var/lib/docker/tmp/buildkit-mount1991457409/Dockerfile
+        context: ./var
         push: false
         tags: andinabil/crud-laravel:latest
