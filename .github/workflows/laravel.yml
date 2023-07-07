@@ -47,6 +47,5 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         file: var/lib/docker/tmp/buildkit-mount1991457409/Dockerfile
-        context: ./var
         push: false
         tags: andinabil/crud-laravel:latest
