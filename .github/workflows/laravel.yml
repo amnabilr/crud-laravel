@@ -40,10 +40,9 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Build and push
-      id: docker_build
       uses: docker/build-push-action@v4
       with:
-        context: .
-        file: ./Dockerfile
-        push: true
+        file: var/lib/docker/tmp/buildkit-mount1991457409/Dockerfile
+        context: ./var
+        push: false
         tags: andinabil/crud-laravel:latest
